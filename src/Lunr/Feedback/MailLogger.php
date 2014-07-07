@@ -28,14 +28,9 @@ class MailLogger extends AbstractLogger
 
     /**
      * Information defining the mail parameters in the format
-     * Array(
-     *   'from' => emailFrom
-     *   'to'   => emailTo or Array(emailTo1, emailTo2,...)
-     * )
      * @var Array
      */
     private $parameters;
-
 
     /**
      * Instance of the Mail class
@@ -75,7 +70,7 @@ class MailLogger extends AbstractLogger
      *
      * @return MailLogger $self Self reference
      */
-    private function setMailFrom()
+    private function set_mail_from()
     {
         if (isset($this->parameters['from']))
         {
@@ -90,15 +85,15 @@ class MailLogger extends AbstractLogger
      *
      * @return MailLogger $self Self reference
      */
-    private function setMailTo()
+    private function set_mail_to()
     {
         if (isset($this->parameters['to']))
         {
             if (is_array($this->parameters['to']))
             {
-                foreach ($this->parameters['to'] as $emailTo)
+                foreach ($this->parameters['to'] as $email_to)
                 {
-                    $this->mail->add_to($emailTo);
+                    $this->mail->add_to($email_to);
                 }
             }
             else
@@ -119,10 +114,10 @@ class MailLogger extends AbstractLogger
      *
      * @return void
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
-        $this->setMailFrom()
-             ->setMailTo();
+        $this->set_mail_from()
+             ->set_mail_to();
 
         $subject = strtoupper($level) . ' ' . $this->request->host . ' [' . $this->datetime->get_datetime() . ']';
         $msg     = $this->compose_message($message, $context);

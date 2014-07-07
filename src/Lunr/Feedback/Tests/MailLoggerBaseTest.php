@@ -54,9 +54,9 @@ class MailLoggerBaseTest extends MailLoggerTest
     }
 
     /**
-     * Test that setMailFrom() don't do anything if no 'from' address is defined.
+     * Test that set_mail_from() don't do anything if no 'from' address is defined.
      *
-     * @covers Lunr\Feedback\MailLogger::setMailFrom
+     * @covers Lunr\Feedback\MailLogger::set_mail_from
      */
     public function testSetMailFromEmpty()
     {
@@ -65,14 +65,14 @@ class MailLoggerBaseTest extends MailLoggerTest
         $this->mail->expects($this->never())
                    ->method('set_from');
 
-        $method = $this->get_accessible_reflection_method('setMailFrom');
+        $method = $this->get_accessible_reflection_method('set_mail_from');
         $method->invoke($this->class);
     }
 
     /**
-     * Test that setMailFrom() defines correctly the 'from' field of the mail.
+     * Test that set_mail_from() defines correctly the 'from' field of the mail.
      *
-     * @covers Lunr\Feedback\MailLogger::setMailFrom
+     * @covers Lunr\Feedback\MailLogger::set_mail_from
      */
     public function testSetMailFrom()
     {
@@ -84,14 +84,14 @@ class MailLoggerBaseTest extends MailLoggerTest
                    ->method('set_from')
                    ->with('test@m2mobi.com');
 
-        $method = $this->get_accessible_reflection_method('setMailFrom');
+        $method = $this->get_accessible_reflection_method('set_mail_from');
         $method->invoke($this->class);
     }
 
     /**
-     * Test that setMailTo() don't do anything if no 'to' address is defined.
+     * Test that set_mail_to() don't do anything if no 'to' address is defined.
      *
-     * @covers Lunr\Feedback\MailLogger::setMailTo
+     * @covers Lunr\Feedback\MailLogger::set_mail_to
      */
     public function testSetMailToEmpty()
     {
@@ -100,14 +100,14 @@ class MailLoggerBaseTest extends MailLoggerTest
         $this->mail->expects($this->never())
                    ->method('add_to');
 
-        $method = $this->get_accessible_reflection_method('setMailTo');
+        $method = $this->get_accessible_reflection_method('set_mail_to');
         $method->invoke($this->class);
     }
 
     /**
-     * Test that setMailTo() defines correctly the unique 'to' field of the mail.
+     * Test that set_mail_to() defines correctly the unique 'to' field of the mail.
      *
-     * @covers Lunr\Feedback\MailLogger::setMailTo
+     * @covers Lunr\Feedback\MailLogger::set_mail_to
      */
     public function testSetMailToUnique()
     {
@@ -119,14 +119,14 @@ class MailLoggerBaseTest extends MailLoggerTest
                    ->method('add_to')
                    ->with('test@m2mobi.com');
 
-        $method = $this->get_accessible_reflection_method('setMailTo');
+        $method = $this->get_accessible_reflection_method('set_mail_to');
         $method->invoke($this->class);
     }
 
     /**
-     * Test that setMailTo() defines correctly multiple 'to' fields in the mail.
+     * Test that set_mail_to() defines correctly multiple 'to' fields in the mail.
      *
-     * @covers Lunr\Feedback\MailLogger::setMailFrom
+     * @covers Lunr\Feedback\MailLogger::set_mail_to
      */
     public function testSetMailToMultiple()
     {
@@ -137,13 +137,15 @@ class MailLoggerBaseTest extends MailLoggerTest
         $this->mail->expects($this->at(0))
                    ->method('add_to')
                    ->with('test@m2mobi.com');
+
         $this->mail->expects($this->at(1))
                    ->method('add_to')
                    ->with('test2@m2mobi.com');
+
         $this->mail->expects($this->exactly(2))
                    ->method('add_to');
 
-        $method = $this->get_accessible_reflection_method('setMailTo');
+        $method = $this->get_accessible_reflection_method('set_mail_to');
         $method->invoke($this->class);
     }
 
