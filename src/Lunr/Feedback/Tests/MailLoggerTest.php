@@ -39,28 +39,22 @@ abstract class MailLoggerTest extends LunrBaseTest
     protected $request;
 
     /**
-     * Mock-instance of the DateTime class.
-     * @var DateTime
-     */
-    protected $datetime;
-
-    /**
      * Mock instance of the Mail class
      * @var Mail
      */
     protected $mail;
 
     /**
-     * DateTime string used for Logging Output.
-     * @var String
-     */
-    const DATETIME_STRING = '2011-11-10 10:30:22';
-
-    /**
      * Request host used for the logging output
      * @var String
      */
     const REQUEST_HOST = 'host.local';
+
+    /**
+     * Request call used for the logging output
+     * @var String
+     */
+    const REQUEST_CALL = 'controller/method';
 
     /**
      * Testcase Constructor.
@@ -71,16 +65,11 @@ abstract class MailLoggerTest extends LunrBaseTest
 
         $this->request       = $this->getMock('Lunr\Corona\RequestInterface');
         $this->request->host = self::REQUEST_HOST;
-
-        $this->datetime = $this->getMock('Lunr\Core\DateTime');
-
-        $this->datetime->expects($this->once())
-                       ->method('set_datetime_format')
-                       ->with($this->equalTo('%Y-%m-%d %H:%M:%S'));
+        $this->request->call = self::REQUEST_CALL;
 
         $this->mail = $this->getMock('Lunr\Network\Mail');
 
-        $this->class = new MailLogger(array(), $this->datetime, $this->request, $this->mail);
+        $this->class = new MailLogger('', '', $this->request, $this->mail);
     }
 
     /**
@@ -89,10 +78,41 @@ abstract class MailLoggerTest extends LunrBaseTest
     public function tearDown()
     {
         unset($this->request);
-        unset($this->datetime);
         unset($this->reflection);
         unset($this->mail);
         unset($this->class);
+    }
+
+    /**
+     * Unit test data provider for log messages.
+     *
+     * @return array $messages Array of log messages
+     */
+    public function messageProvider()
+    {
+        $messages   = array();
+        $messages[] = array('msg', array('test' => 'value'), 'msg');
+        $messages[] = array('{test} msg', array('test' => 'value'), 'value msg');
+        $messages[] = array('{test} msg, {test1}', array('test' => 'value', 'test1' => 1), 'value msg, 1');
+        $messages[] = array('{test} msg', array('test' => 'value', 'file' => 'file.php', 'line' => 11), 'value msg (file.php: 11)');
+
+        return $messages;
+    }
+
+    /**
+     * Unit test data provider for log subject.
+     *
+     * @return array $messages Array of subject messages
+     */
+    public function subjectProvider()
+    {
+        $subjects   = array();
+        $subjects[] = array('warning', NULL, NULL, 'WARNING');
+        $subjects[] = array('warning', 'host.local', NULL, 'WARNING host.local');
+        $subjects[] = array('warning', NULL, 'controller/method', 'WARNING controller/method');
+        $subjects[] = array('warning', 'host.local', 'controller/method', 'WARNING host.local controller/method');
+
+        return $subjects;
     }
 
 }

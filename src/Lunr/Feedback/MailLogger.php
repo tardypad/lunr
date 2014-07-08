@@ -3,13 +3,13 @@
 /**
  * Mail logging class.
  *
- * PHP Version 5.5
+ * PHP Version 5.4
  *
  * @category   Libraries
  * @package    Feedback
  * @subpackage Libraries
  * @author     Damien Tardy-Panis <damien@m2mobi.com>
- * @copyright  2012-2014, M2Mobi BV, Amsterdam, The Netherlands
+ * @copyright  2014, M2Mobi BV, Amsterdam, The Netherlands
  * @license    http://lunr.nl/LICENSE MIT License
  */
 
@@ -27,10 +27,16 @@ class MailLogger extends AbstractLogger
 {
 
     /**
-     * Information defining the mail parameters in the format
-     * @var Array
+     * Email address of the sender
+     * @var String
      */
-    private $parameters;
+    private $from;
+
+    /**
+     * Email address(es) of the receiver(s)
+     * @var Mixed
+     */
+    private $to;
 
     /**
      * Instance of the Mail class
@@ -41,17 +47,18 @@ class MailLogger extends AbstractLogger
     /**
      * Constructor.
      *
-     * @param Array                         $parameters Information defining the mail parameters
-     * @param \Lunr\Core\DateTime           $datetime   Instance of the DateTime class.
-     * @param \Lunr\Corona\RequestInterface $request    Shared instance of the Request class.
-     * @param \Lunr\Network\Mail            $mail       Instance of the Mail class
+     * @param String                        $from    Email address of the sender
+     * @param Mixed                         $to      Email address(es) of the receiver(s)
+     * @param \Lunr\Corona\RequestInterface $request Shared instance of the Request class.
+     * @param \Lunr\Network\Mail            $mail    Instance of the Mail class
      */
-    public function __construct($parameters, $datetime, $request, $mail)
+    public function __construct($from, $to, $request, $mail)
     {
-        $this->parameters = $parameters;
-        $this->mail       = $mail;
+        $this->mail = $mail;
+        $this->from = $from;
+        $this->to   = $to;
 
-        parent::__construct($request, $datetime);
+        parent::__construct($request);
     }
 
     /**
@@ -59,8 +66,9 @@ class MailLogger extends AbstractLogger
      */
     public function __destruct()
     {
-        unset($this->parameters);
         unset($this->mail);
+        unset($this->from);
+        unset($this->to);
 
         parent::__destruct();
     }
@@ -72,10 +80,7 @@ class MailLogger extends AbstractLogger
      */
     private function set_mail_from()
     {
-        if (isset($this->parameters['from']))
-        {
-            $this->mail->set_from($this->parameters['from']);
-        }
+        $this->mail->set_from($this->from);
 
         return $this;
     }
@@ -87,22 +92,63 @@ class MailLogger extends AbstractLogger
      */
     private function set_mail_to()
     {
-        if (isset($this->parameters['to']))
+        if (is_array($this->to))
         {
-            if (is_array($this->parameters['to']))
+            foreach ($this->to as $email_to)
             {
-                foreach ($this->parameters['to'] as $email_to)
-                {
-                    $this->mail->add_to($email_to);
-                }
+                $this->mail->add_to($email_to);
             }
-            else
-            {
-                $this->mail->add_to($this->parameters['to']);
-            }
+        }
+        else
+        {
+            $this->mail->add_to($this->to);
         }
 
         return $this;
+    }
+
+    /**
+     * Compose message string.
+     *
+     * @param String $message Base message with placeholders
+     * @param array  $context Additional meta-information for the log
+     *
+     * @return String $msg Log Message String
+     */
+    protected function compose_message($message, $context)
+    {
+        $suffix = '';
+
+        if (!empty($context['file']) && !empty($context['line']))
+        {
+            $suffix .= ' (' . $context['file'] . ': ' . $context['line'] . ')';
+        }
+
+        return $this->interpolate_message($message, $context) . $suffix;
+    }
+
+    /**
+     * Compose subject string.
+     *
+     * @param String $level Log level
+     *
+     * @return String $subject Log subject String
+     */
+    private function compose_subject($level)
+    {
+        $subject = strtoupper($level);
+
+        if ($this->request->host !== NULL)
+        {
+            $subject .= ' ' . $this->request->host;
+        }
+
+        if ($this->request->call !== NULL)
+        {
+            $subject .= ' ' . $this->request->call;
+        }
+
+        return $subject;
     }
 
     /**
@@ -119,7 +165,7 @@ class MailLogger extends AbstractLogger
         $this->set_mail_from()
              ->set_mail_to();
 
-        $subject = strtoupper($level) . ' ' . $this->request->host . ' [' . $this->datetime->get_datetime() . ']';
+        $subject = $this->compose_subject($level);
         $msg     = $this->compose_message($message, $context);
 
         $this->mail->set_subject($subject)
