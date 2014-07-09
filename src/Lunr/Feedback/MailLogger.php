@@ -45,6 +45,12 @@ class MailLogger extends AbstractLogger
     private $mail;
 
     /**
+     * Defines whether or not the configuration of the mail is valid
+     * @var Boolean
+     */
+    private $is_configuration_valid = FALSE;
+
+    /**
      * Constructor.
      *
      * @param String                        $from    Email address of the sender
@@ -57,6 +63,8 @@ class MailLogger extends AbstractLogger
         $this->mail = $mail;
         $this->from = $from;
         $this->to   = $to;
+
+        $this->check_configuration();
 
         parent::__construct($request);
     }
@@ -71,6 +79,32 @@ class MailLogger extends AbstractLogger
         unset($this->to);
 
         parent::__destruct();
+    }
+
+    /**
+     * Check if the configuration is valid.
+     *
+     * @return MailLogger $self Self reference
+     */
+    private function check_configuration()
+    {
+        $is_from_valid = $this->mail->is_valid($this->from);
+
+        $is_to_valid = !empty($this->to);
+
+        if (is_array($this->to))
+        {
+            foreach ($this->to as $email_to)
+            {
+                $is_to_valid = $is_to_valid && $this->mail->is_valid($email_to);
+            }
+        } else {
+            $is_to_valid = $this->mail->is_valid($this->to);
+        }
+
+        $this->is_configuration_valid = $is_from_valid && $is_to_valid;
+
+        return $this;
     }
 
     /**
@@ -162,6 +196,11 @@ class MailLogger extends AbstractLogger
      */
     public function log($level, $message, array $context = [])
     {
+        if (!$this->is_configuration_valid)
+        {
+            return;
+        }
+
         $this->set_mail_from()
              ->set_mail_to();
 

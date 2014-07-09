@@ -46,6 +46,33 @@ class MailLoggerBaseTest extends MailLoggerTest
     }
 
     /**
+     * Test the check_configuration() function.
+     *
+     * @param Mixed   $from             'from' field
+     * @param Mixed   $to               'to' field
+     * @param Array   $is_valid_results consecutive results of Mail is_valid function
+     * @param Boolean $expected         expected validity of the configuration
+     *
+     * @dataProvider configurationProvider
+     * @covers       Lunr\Feedback\MailLogger::check_configuration
+     */
+    public function testConfigurationValidation($from, $to, $is_valid_results, $expected)
+    {
+        $this->set_reflection_property_value('from', $from);
+        $this->set_reflection_property_value('to', $to);
+
+        $consecutiveCalls = call_user_func_array(array($this, 'onConsecutiveCalls'), $is_valid_results);
+        $this->mail->expects($this->any())
+                   ->method('is_valid')
+                   ->will($consecutiveCalls);
+
+        $method = $this->get_accessible_reflection_method('check_configuration');
+        $method->invoke($this->class);
+
+        $this->assertPropertySame('is_configuration_valid', $expected);
+    }
+
+    /**
      * Test that set_mail_from() defines correctly the 'from' field of the mail.
      *
      * @covers Lunr\Feedback\MailLogger::set_mail_from
@@ -146,12 +173,14 @@ class MailLoggerBaseTest extends MailLoggerTest
     }
 
     /**
-     * Test that log() logs correctly to a mail.
+     * Test that log() logs correctly to a mail if configuration is valid.
      *
      * @covers Lunr\Feedback\MailLogger::log
      */
     public function testLogSendsMessageInMail()
     {
+        $this->set_reflection_property_value('is_configuration_valid', TRUE);
+
         $this->mail->expects($this->once())
                    ->method('set_subject')
                    ->with('WARNING ' . self::REQUEST_HOST . ' ' . self::REQUEST_CALL)
@@ -163,6 +192,27 @@ class MailLoggerBaseTest extends MailLoggerTest
                    ->will($this->returnSelf());
 
         $this->mail->expects($this->once())
+                   ->method('send');
+
+        $this->class->log(LogLevel::WARNING, 'Foo');
+    }
+
+    /**
+     * Test that log() doesn't send a mail if configuration is invalid.
+     *
+     * @covers Lunr\Feedback\MailLogger::log
+     */
+    public function testLogDontSendsMessageInMail()
+    {
+        $this->set_reflection_property_value('is_configuration_valid', FALSE);
+
+        $this->mail->expects($this->never())
+                   ->method('set_subject');
+
+        $this->mail->expects($this->never())
+                   ->method('set_message');
+
+        $this->mail->expects($this->never())
                    ->method('send');
 
         $this->class->log(LogLevel::WARNING, 'Foo');

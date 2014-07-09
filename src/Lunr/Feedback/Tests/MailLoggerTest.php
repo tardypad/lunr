@@ -102,7 +102,7 @@ abstract class MailLoggerTest extends LunrBaseTest
     /**
      * Unit test data provider for log subject.
      *
-     * @return array $messages Array of subject messages
+     * @return array $subjects Array of subject messages
      */
     public function subjectProvider()
     {
@@ -113,6 +113,29 @@ abstract class MailLoggerTest extends LunrBaseTest
         $subjects[] = array('warning', 'host.local', 'controller/method', 'WARNING host.local controller/method');
 
         return $subjects;
+    }
+
+    /**
+     * Unit test data provider for configuration.
+     *
+     * @return array $config Array of config
+     */
+    public function configurationProvider()
+    {
+        $config   = array();
+        $config[] = array('', '', array(FALSE, FALSE), FALSE);
+        $config[] = array('', 'test@m2mobi.com', array(FALSE, TRUE), FALSE);
+        $config[] = array('test@m2mobi.com', '', array(TRUE, FALSE), FALSE);
+        $config[] = array('test@m2mobi.com', array(), array(TRUE, FALSE), FALSE);
+        $config[] = array('test@m2mobi.com', 'nonvalidemail', array(TRUE, FALSE), FALSE);
+        $config[] = array('nonvalidemail', 'test@m2mobi.com', array(FALSE, TRUE), FALSE);
+        $config[] = array(array('test@m2mobi.com', 'test2@m2mobi.com'), 'test@m2mobi.com', array(FALSE, TRUE), FALSE);
+        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com', 'nonvalidemail'), array(TRUE, TRUE, FALSE), FALSE);
+        $config[] = array('test@m2mobi.com', 'test2@m2mobi.com', array(TRUE, TRUE), TRUE);
+        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com'), array(TRUE, TRUE), TRUE);
+        $config[] = array('test@m2mobi.com', array('test@m2mobi.com', 'test2@m2mobi.com'), array(TRUE, TRUE, TRUE), TRUE);
+
+        return $config;
     }
 
 }
