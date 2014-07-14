@@ -123,17 +123,17 @@ abstract class MailLoggerTest extends LunrBaseTest
     public function configurationProvider()
     {
         $config   = array();
-        $config[] = array('', '', array(FALSE, FALSE), FALSE);
-        $config[] = array('', 'test@m2mobi.com', array(FALSE, TRUE), FALSE);
-        $config[] = array('test@m2mobi.com', '', array(TRUE, FALSE), FALSE);
-        $config[] = array('test@m2mobi.com', array(), array(TRUE, FALSE), FALSE);
-        $config[] = array('test@m2mobi.com', 'nonvalidemail', array(TRUE, FALSE), FALSE);
-        $config[] = array('nonvalidemail', 'test@m2mobi.com', array(FALSE, TRUE), FALSE);
-        $config[] = array(array('test@m2mobi.com', 'test2@m2mobi.com'), 'test@m2mobi.com', array(FALSE, TRUE), FALSE);
-        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com', 'nonvalidemail'), array(TRUE, TRUE, FALSE), FALSE);
-        $config[] = array('test@m2mobi.com', 'test2@m2mobi.com', array(TRUE, TRUE), TRUE);
-        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com'), array(TRUE, TRUE), TRUE);
-        $config[] = array('test@m2mobi.com', array('test@m2mobi.com', 'test2@m2mobi.com'), array(TRUE, TRUE, TRUE), TRUE);
+        $config[] = array('', '', FALSE);
+        $config[] = array('', 'test@m2mobi.com', FALSE);
+        $config[] = array('test@m2mobi.com', '', FALSE);
+        $config[] = array('test@m2mobi.com', array(), FALSE);
+        $config[] = array('test@m2mobi.com', 'nonvalidemail', FALSE);
+        $config[] = array('nonvalidemail', 'test@m2mobi.com', FALSE);
+        $config[] = array(array('test@m2mobi.com', 'test2@m2mobi.com'), 'test@m2mobi.com', FALSE);
+        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com', 'nonvalidemail'), FALSE);
+        $config[] = array('test@m2mobi.com', 'test2@m2mobi.com', TRUE);
+        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com'), TRUE);
+        $config[] = array('test@m2mobi.com', array('test@m2mobi.com', 'test2@m2mobi.com'), TRUE);
 
         return $config;
     }

@@ -98,7 +98,9 @@ class MailLogger extends AbstractLogger
             {
                 $is_to_valid = $is_to_valid && $this->mail->is_valid($email_to);
             }
-        } else {
+        }
+        else
+        {
             $is_to_valid = $this->mail->is_valid($this->to);
         }
 

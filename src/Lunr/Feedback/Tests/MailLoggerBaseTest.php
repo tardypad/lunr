@@ -48,23 +48,28 @@ class MailLoggerBaseTest extends MailLoggerTest
     /**
      * Test the check_configuration() function.
      *
-     * @param Mixed   $from             'from' field
-     * @param Mixed   $to               'to' field
-     * @param Array   $is_valid_results consecutive results of Mail is_valid function
-     * @param Boolean $expected         expected validity of the configuration
+     * @param Mixed   $from     'from' field
+     * @param Mixed   $to       'to' field
+     * @param Boolean $expected expected validity of the configuration
      *
      * @dataProvider configurationProvider
      * @covers       Lunr\Feedback\MailLogger::check_configuration
      */
-    public function testConfigurationValidation($from, $to, $is_valid_results, $expected)
+    public function testConfigurationValidation($from, $to, $expected)
     {
         $this->set_reflection_property_value('from', $from);
         $this->set_reflection_property_value('to', $to);
 
-        $consecutiveCalls = call_user_func_array(array($this, 'onConsecutiveCalls'), $is_valid_results);
+        $map = array(
+            array('', FALSE),
+            array('nonvalidemail', FALSE),
+            array('test@m2mobi.com', TRUE),
+            array('test2@m2mobi.com', TRUE)
+        );
+
         $this->mail->expects($this->any())
                    ->method('is_valid')
-                   ->will($consecutiveCalls);
+                   ->will($this->returnValueMap($map));
 
         $method = $this->get_accessible_reflection_method('check_configuration');
         $method->invoke($this->class);
