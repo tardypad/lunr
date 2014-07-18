@@ -15,6 +15,8 @@
 
 namespace Lunr\Corona\Tests;
 
+use Lunr\Halo\HTTPHeadersTestTrait;
+
 /**
  * This class contains tests for the JsonView class.
  *
@@ -26,6 +28,8 @@ namespace Lunr\Corona\Tests;
  */
 class JsonViewPrintTest extends JsonViewTest
 {
+
+    use HTTPHeadersTestTrait;
 
     /**
      * JSON return value;
@@ -289,6 +293,8 @@ class JsonViewPrintTest extends JsonViewTest
      */
     public function testPrintPageSetsContentType()
     {
+        $this->start_headers_tests();
+
         $this->response->expects($this->once())
                        ->method('get_return_code_identifiers')
                        ->with($this->equalTo(TRUE))
@@ -322,12 +328,9 @@ class JsonViewPrintTest extends JsonViewTest
 
         $this->class->print_page();
 
-        $headers = xdebug_get_headers();
+        $this->assertHeadersContains('Content-type: application/json');
 
-        $this->assertInternalType('array', $headers);
-        $this->assertNotEmpty($headers);
-
-        $this->assertEquals('Content-type: application/json', $headers[0]);
+        $this->finish_headers_tests();
     }
 
 }
