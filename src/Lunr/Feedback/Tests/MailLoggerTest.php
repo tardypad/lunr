@@ -115,29 +115,6 @@ abstract class MailLoggerTest extends LunrBaseTest
         return $subjects;
     }
 
-    /**
-     * Unit test data provider for configuration.
-     *
-     * @return array $config Array of config
-     */
-    public function configurationProvider()
-    {
-        $config   = array();
-        $config[] = array('', '', FALSE);
-        $config[] = array('', 'test@m2mobi.com', FALSE);
-        $config[] = array('test@m2mobi.com', '', FALSE);
-        $config[] = array('test@m2mobi.com', array(), FALSE);
-        $config[] = array('test@m2mobi.com', 'nonvalidemail', FALSE);
-        $config[] = array('nonvalidemail', 'test@m2mobi.com', FALSE);
-        $config[] = array(array('test@m2mobi.com', 'test2@m2mobi.com'), 'test@m2mobi.com', FALSE);
-        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com', 'nonvalidemail'), FALSE);
-        $config[] = array('test@m2mobi.com', 'test2@m2mobi.com', TRUE);
-        $config[] = array('test@m2mobi.com', array('test2@m2mobi.com'), TRUE);
-        $config[] = array('test@m2mobi.com', array('test@m2mobi.com', 'test2@m2mobi.com'), TRUE);
-
-        return $config;
-    }
-
 }
 
 ?>

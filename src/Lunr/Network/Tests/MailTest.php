@@ -97,6 +97,29 @@ abstract class MailTest extends LunrBaseTest
         return $emails;
     }
 
+    /**
+     * Unit test data provider for endpoints.
+     *
+     * @return array $config Array of config
+     */
+    public function endpointsProvider()
+    {
+        $config   = array();
+        $config[] = array('', '', FALSE);
+        $config[] = array('', 'info@m2mobi.com', FALSE);
+        $config[] = array('info@m2mobi.com', '', FALSE);
+        $config[] = array('info@m2mobi.com', array(), FALSE);
+        $config[] = array('info@m2mobi.com', 'info', FALSE);
+        $config[] = array('info', 'info@m2mobi.com', FALSE);
+        $config[] = array(array('info@m2mobi.com', 'info.jobs@m2mobi.com'), 'info@m2mobi.com', FALSE);
+        $config[] = array('info@m2mobi.com', array('info.jobs@m2mobi.com', 'info'), FALSE);
+        $config[] = array('info@m2mobi.com', 'info.jobs@m2mobi.com', TRUE);
+        $config[] = array('info@m2mobi.com', array('info.jobs@m2mobi.com'), TRUE);
+        $config[] = array('info@m2mobi.com', array('info@m2mobi.com', 'info.jobs@m2mobi.com'), TRUE);
+
+        return $config;
+    }
+
 }
 
 ?>

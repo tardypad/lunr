@@ -85,6 +85,47 @@ class Mail
     }
 
     /**
+     * Validate the endpoints of a mail.
+     *
+     * @param string $from From email address
+     * @param mixed  $to   To email address(es)
+     *
+     * @return Boolean $return TRUE if all endpoints are valid, FALSE otherwise
+     */
+    public function are_endpoints_valid($from, $to)
+    {
+        if (empty($from) || !$this->is_valid($from))
+        {
+            return FALSE;
+        }
+
+        if (empty($to))
+        {
+            return FALSE;
+        }
+
+        if (is_array($to))
+        {
+            foreach ($to as $email_to)
+            {
+                if (!$this->is_valid($email_to))
+                {
+                    return FALSE;
+                }
+            }
+        }
+        else
+        {
+            if (!$this->is_valid($to))
+            {
+                return FALSE;
+            }
+        }
+
+        return TRUE;
+    }
+
+    /**
      * Validate a given input String for a correct email format.
      *
      * @param String $email Email address to validate

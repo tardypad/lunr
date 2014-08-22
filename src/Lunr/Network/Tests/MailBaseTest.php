@@ -106,6 +106,21 @@ class MailBaseTest extends MailTest
         $this->assertFalse($this->class->is_valid($email));
     }
 
+    /**
+     * Test the are_endpoints_valid() function.
+     *
+     * @param Mixed   $from     'from' field
+     * @param Mixed   $to       'to' field
+     * @param Boolean $expected expected validity of the endpoints
+     *
+     * @dataProvider endpointsProvider
+     * @covers       Lunr\Network\Mail::are_endpoints_valid
+     */
+    public function testEndpointsValidation($from, $to, $expected)
+    {
+        $this->assertEquals($expected, $this->class->are_endpoints_valid($from, $to));
+    }
+
 }
 
 ?>
